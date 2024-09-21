@@ -1,0 +1,57 @@
+# Docker Compose configuration
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://user:password@postgres:5432/chemdb
+      - MONGO_URL=mongodb://mongo:27017/chemdb
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=chemdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:6
+
+volumes:
+  postgres_data:
+  mongo_data:
