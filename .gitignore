@@ -7,5 +7,5 @@ build/
 node_modules/
 .env
 *.log
-build/
+build/ 
 .DS_Store
